@@ -11,6 +11,10 @@ import Alerts from "./pages/Alerts";
 import Transport from "./pages/Transport";
 import OrganTypes from "./pages/OrganTypes";
 import BloodBank from "./pages/BloodBank";
+import Analytics from "./pages/Analytics";
+import MatchLog from "./pages/MatchLog";
+import HospitalNetwork from "./pages/HospitalNetwork";
+import ActivityTimeline from "./pages/ActivityTimeline";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +34,10 @@ const App = () => (
             <Route path="transport" element={<Transport />} />
             <Route path="organs" element={<OrganTypes />} />
             <Route path="blood" element={<BloodBank />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="matches" element={<MatchLog />} />
+            <Route path="hospitals" element={<HospitalNetwork />} />
+            <Route path="timeline" element={<ActivityTimeline />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
