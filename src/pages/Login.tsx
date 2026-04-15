@@ -147,7 +147,19 @@ const Login = () => {
             </Button>
           </form>
 
-          <p className="text-center text-muted-foreground text-xs mt-8">
+          <div className="text-center mt-6">
+            <p className="text-muted-foreground text-sm">
+              Don't have an account?{" "}
+              <button
+                onClick={() => navigate("/register")}
+                className="text-primary font-medium hover:underline"
+              >
+                Register here
+              </button>
+            </p>
+          </div>
+
+          <p className="text-center text-muted-foreground text-xs mt-4">
             Access restricted to authorized hospital personnel only.
           </p>
         </div>
