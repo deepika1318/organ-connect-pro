@@ -1,9 +1,10 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Heart, LayoutDashboard, Send, Bell, Truck, Droplets, LogOut, BarChart3, Users, Building2, Clock } from "lucide-react";
+import { Heart, LayoutDashboard, Send, Bell, Truck, Droplets, LogOut, BarChart3, Users, Building2, Clock, HeartHandshake } from "lucide-react";
 
 const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/dashboard/request", icon: Send, label: "Request Organ" },
+  { to: "/dashboard/donor", icon: HeartHandshake, label: "Donor Registration" },
   { to: "/dashboard/alerts", icon: Bell, label: "Alerts", badge: 3 },
   { to: "/dashboard/transport", icon: Truck, label: "Transport" },
   { to: "/dashboard/matches", icon: Users, label: "Match Log" },

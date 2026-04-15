@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import DashboardLayout from "./components/DashboardLayout";
 import DashboardHome from "./pages/DashboardHome";
 import RequestOrgan from "./pages/RequestOrgan";
+import DonorRegistration from "./pages/DonorRegistration";
 import Alerts from "./pages/Alerts";
 import Transport from "./pages/Transport";
 import OrganTypes from "./pages/OrganTypes";
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardHome />} />
             <Route path="request" element={<RequestOrgan />} />
+            <Route path="donor" element={<DonorRegistration />} />
             <Route path="alerts" element={<Alerts />} />
             <Route path="transport" element={<Transport />} />
             <Route path="organs" element={<OrganTypes />} />

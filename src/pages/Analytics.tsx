@@ -32,7 +32,7 @@ const monthlyTransports = [
 
 const kpis = [
   { label: "Avg Response Time", value: "4.2 min", change: "-12%", positive: true, icon: Clock },
-  { label: "Success Rate", value: "99.2%", change: "+0.3%", positive: true, icon: TrendingUp },
+  { label: "Success Rate", value: "89%", change: "+1.5%", positive: true, icon: TrendingUp },
   { label: "Active Hospitals", value: "127", change: "+8", positive: true, icon: Users },
   { label: "Organs Saved (Month)", value: "92", change: "+15%", positive: true, icon: Heart },
   { label: "Avg Transport Time", value: "3.4 hrs", change: "-8%", positive: true, icon: Zap },
