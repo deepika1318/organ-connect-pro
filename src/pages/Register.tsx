@@ -147,10 +147,10 @@ const Register = () => {
         <User className="w-5 h-5 text-primary" /> Personal Information
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <InputField label="Full Name *" field="fullName" placeholder="Dr. Rajesh Kumar" icon={User} />
-        <InputField label="Email Address *" field="email" type="email" placeholder="doctor@hospital.com" icon={Mail} />
-        <InputField label="Phone Number *" field="phone" type="tel" placeholder="+91 98765 43210" icon={Phone} />
-        <InputField label="Date of Birth *" field="dateOfBirth" type="date" placeholder="" icon={Calendar} />
+        <RegisterInputField label="Full Name *" field="fullName" value={formData.fullName} placeholder="Dr. Rajesh Kumar" icon={User} onValueChange={update} />
+        <RegisterInputField label="Email Address *" field="email" value={formData.email} type="email" placeholder="doctor@hospital.com" icon={Mail} onValueChange={update} />
+        <RegisterInputField label="Phone Number *" field="phone" value={formData.phone} type="tel" placeholder="+91 98765 43210" icon={Phone} onValueChange={update} />
+        <RegisterInputField label="Date of Birth *" field="dateOfBirth" value={formData.dateOfBirth} type="date" placeholder="" icon={Calendar} onValueChange={update} />
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Gender *</Label>
           <div className="flex gap-2">
@@ -170,11 +170,11 @@ const Register = () => {
             ))}
           </div>
         </div>
-        <InputField label="City *" field="city" placeholder="Mumbai" icon={Building2} />
+        <RegisterInputField label="City *" field="city" value={formData.city} placeholder="Mumbai" icon={Building2} onValueChange={update} />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <InputField label="State *" field="state" placeholder="Maharashtra" />
-        <InputField label="Pincode *" field="pincode" placeholder="400001" />
+        <RegisterInputField label="State *" field="state" value={formData.state} placeholder="Maharashtra" onValueChange={update} />
+        <RegisterInputField label="Pincode *" field="pincode" value={formData.pincode} placeholder="400001" onValueChange={update} />
       </div>
       <div className="space-y-1.5">
         <Label className="text-xs text-muted-foreground">Full Address *</Label>
@@ -198,36 +198,36 @@ const Register = () => {
 
       {role === "doctor" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <InputField label="Medical License No. *" field="medicalLicenseNo" placeholder="MCI-123456" icon={FileText} />
-          <InputField label="NMC Registration No. *" field="nmcRegistrationNo" placeholder="NMC-2024-78901" icon={BadgeCheck} />
-          <InputField label="Specialization *" field="specialization" placeholder="Cardiology, Nephrology…" icon={Stethoscope} />
-          <InputField label="Years of Experience *" field="yearsOfExperience" type="number" placeholder="12" icon={Calendar} />
-          <InputField label="Hospital Affiliation *" field="hospitalAffiliation" placeholder="AIIMS Delhi" icon={Building2} />
-          <InputField label="Department *" field="department" placeholder="Cardiac Surgery" />
+          <RegisterInputField label="Medical License No. *" field="medicalLicenseNo" value={formData.medicalLicenseNo} placeholder="MCI-123456" icon={FileText} onValueChange={update} />
+          <RegisterInputField label="NMC Registration No. *" field="nmcRegistrationNo" value={formData.nmcRegistrationNo} placeholder="NMC-2024-78901" icon={BadgeCheck} onValueChange={update} />
+          <RegisterInputField label="Specialization *" field="specialization" value={formData.specialization} placeholder="Cardiology, Nephrology…" icon={Stethoscope} onValueChange={update} />
+          <RegisterInputField label="Years of Experience *" field="yearsOfExperience" value={formData.yearsOfExperience} type="number" placeholder="12" icon={Calendar} onValueChange={update} />
+          <RegisterInputField label="Hospital Affiliation *" field="hospitalAffiliation" value={formData.hospitalAffiliation} placeholder="AIIMS Delhi" icon={Building2} onValueChange={update} />
+          <RegisterInputField label="Department *" field="department" value={formData.department} placeholder="Cardiac Surgery" onValueChange={update} />
           <div className="sm:col-span-2">
-            <InputField label="Qualifications *" field="qualifications" placeholder="MBBS, MD, DM (Cardiology)" icon={FileText} />
+            <RegisterInputField label="Qualifications *" field="qualifications" value={formData.qualifications} placeholder="MBBS, MD, DM (Cardiology)" icon={FileText} onValueChange={update} />
           </div>
         </div>
       )}
 
       {role === "admin" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <InputField label="Admin ID *" field="adminId" placeholder="ADM-2024-001" icon={Shield} />
-          <InputField label="Government ID *" field="governmentId" placeholder="Aadhaar / PAN / Service ID" icon={FileText} />
-          <InputField label="Designation *" field="designation" placeholder="Regional Transplant Coordinator" icon={BadgeCheck} />
-          <InputField label="Authority Level *" field="authorityLevel" placeholder="State / National" />
+          <RegisterInputField label="Admin ID *" field="adminId" value={formData.adminId} placeholder="ADM-2024-001" icon={Shield} onValueChange={update} />
+          <RegisterInputField label="Government ID *" field="governmentId" value={formData.governmentId} placeholder="Aadhaar / PAN / Service ID" icon={FileText} onValueChange={update} />
+          <RegisterInputField label="Designation *" field="designation" value={formData.designation} placeholder="Regional Transplant Coordinator" icon={BadgeCheck} onValueChange={update} />
+          <RegisterInputField label="Authority Level *" field="authorityLevel" value={formData.authorityLevel} placeholder="State / National" onValueChange={update} />
           <div className="sm:col-span-2">
-            <InputField label="Organization Name *" field="organizationName" placeholder="NOTTO / ROTTO / SOTTO" icon={Building2} />
+            <RegisterInputField label="Organization Name *" field="organizationName" value={formData.organizationName} placeholder="NOTTO / ROTTO / SOTTO" icon={Building2} onValueChange={update} />
           </div>
         </div>
       )}
 
       {role === "hospital_head" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <InputField label="Hospital Name *" field="hospitalName" placeholder="Fortis Hospital Mumbai" icon={Building2} />
-          <InputField label="Hospital Registration No. *" field="hospitalRegNo" placeholder="HRN-MH-2024-789" icon={FileText} />
-          <InputField label="NABH Accreditation No. *" field="nabhAccreditationNo" placeholder="NABH-H-2024-1234" icon={BadgeCheck} />
-          <InputField label="Designation *" field="headDesignation" placeholder="Chief Medical Officer" icon={Crown} />
+          <RegisterInputField label="Hospital Name *" field="hospitalName" value={formData.hospitalName} placeholder="Fortis Hospital Mumbai" icon={Building2} onValueChange={update} />
+          <RegisterInputField label="Hospital Registration No. *" field="hospitalRegNo" value={formData.hospitalRegNo} placeholder="HRN-MH-2024-789" icon={FileText} onValueChange={update} />
+          <RegisterInputField label="NABH Accreditation No. *" field="nabhAccreditationNo" value={formData.nabhAccreditationNo} placeholder="NABH-H-2024-1234" icon={BadgeCheck} onValueChange={update} />
+          <RegisterInputField label="Designation *" field="headDesignation" value={formData.headDesignation} placeholder="Chief Medical Officer" icon={Crown} onValueChange={update} />
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">Hospital Type *</Label>
             <select
@@ -243,7 +243,7 @@ const Register = () => {
               <option value="military">Military / Defence</option>
             </select>
           </div>
-          <InputField label="Total Beds *" field="totalBeds" type="number" placeholder="500" />
+          <RegisterInputField label="Total Beds *" field="totalBeds" value={formData.totalBeds} type="number" placeholder="500" onValueChange={update} />
           <div className="sm:col-span-2">
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Hospital Address *</Label>
