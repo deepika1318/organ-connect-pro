@@ -1,6 +1,6 @@
-import { useState, useCallback, memo } from "react";
+import { useState, useCallback, memo, type ChangeEvent, type ElementType, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { addRegistration } from "@/lib/registrations";
 import { Button } from "@/components/ui/button";
@@ -52,7 +52,7 @@ interface FormData {
   totalBeds: string;
 }
 
-const initialFormData: FormData = {
+const createInitialFormData = (): FormData => ({
   fullName: "", email: "", phone: "", password: "", confirmPassword: "",
   dateOfBirth: "", gender: "", address: "", city: "", state: "", pincode: "", profilePhoto: "",
   medicalLicenseNo: "", specialization: "", yearsOfExperience: "",
@@ -60,7 +60,7 @@ const initialFormData: FormData = {
   adminId: "", designation: "", authorityLevel: "", governmentId: "", organizationName: "",
   hospitalName: "", hospitalRegNo: "", hospitalType: "", headDesignation: "",
   nabhAccreditationNo: "", hospitalAddress: "", totalBeds: "",
-};
+});
 
 const roles = [
   { id: "doctor" as const, label: "Doctor", icon: Stethoscope, desc: "Medical professional" },
@@ -68,45 +68,66 @@ const roles = [
   { id: "admin" as const, label: "Admin", icon: Shield, desc: "System administrator" },
 ];
 
-const StableInputField = memo(({
-  label, type = "text", placeholder, icon: Icon, required = true, value, onChange,
-}: {
-  label: string; type?: string; placeholder: string;
-  icon?: React.ElementType; required?: boolean;
-  value: string; onChange: (v: string) => void;
-}) => (
-  <div className="space-y-1.5">
-    <Label className="text-xs text-muted-foreground">{label}</Label>
-    <div className="relative">
-      {Icon && <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />}
-      <Input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`h-11 bg-secondary border-border focus:border-primary ${Icon ? "pl-10" : ""}`}
-        required={required}
-      />
+interface RegisterInputFieldProps {
+  label: string;
+  field: keyof FormData;
+  value: string;
+  placeholder: string;
+  type?: string;
+  icon?: ElementType;
+  required?: boolean;
+  onValueChange: (field: keyof FormData, value: string) => void;
+}
+
+const RegisterInputField = memo(({
+  label,
+  field,
+  value,
+  placeholder,
+  type = "text",
+  icon: Icon,
+  required = true,
+  onValueChange,
+}: RegisterInputFieldProps) => {
+  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    onValueChange(field, event.target.value);
+  }, [field, onValueChange]);
+
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <div className="relative">
+        {Icon && <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />}
+        <Input
+          type={type}
+          placeholder={placeholder}
+          value={value}
+          onChange={handleChange}
+          className={`h-11 bg-secondary border-border focus:border-primary ${Icon ? "pl-10" : ""}`}
+          required={required}
+        />
+      </div>
     </div>
-  </div>
-));
-StableInputField.displayName = "StableInputField";
+  );
+});
+RegisterInputField.displayName = "RegisterInputField";
 
 const Register = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState<Role>("doctor");
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [formData, setFormData] = useState<FormData>(() => createInitialFormData());
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const update = useCallback((field: keyof FormData, value: string) =>
-    setFormData((prev) => ({ ...prev, [field]: value })), []);
+  const update = useCallback((field: keyof FormData, value: string) => {
+    setFormData((prev) => (prev[field] === value ? prev : { ...prev, [field]: value }));
+  }, []);
 
   const totalSteps = 3;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Persist for admin review and notify
     addRegistration(role, { ...formData });
@@ -118,23 +139,6 @@ const Register = () => {
   };
 
   const genderOptions = ["Male", "Female", "Other"];
-
-  const InputField = ({
-    label, field, type = "text", placeholder, icon: Icon, required = true,
-  }: {
-    label: string; field: keyof FormData; type?: string; placeholder: string;
-    icon?: React.ElementType; required?: boolean;
-  }) => (
-    <StableInputField
-      label={label}
-      type={type}
-      placeholder={placeholder}
-      icon={Icon}
-      required={required}
-      value={formData[field]}
-      onChange={(v) => update(field, v)}
-    />
-  );
 
   // Step 1: Personal Information (common)
   const renderStep1 = () => (
