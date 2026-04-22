@@ -77,8 +77,8 @@ const Register = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const update = (field: keyof FormData, value: string) =>
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const update = useCallback((field: keyof FormData, value: string) =>
+    setFormData((prev) => ({ ...prev, [field]: value })), []);
 
   const totalSteps = 3;
 
