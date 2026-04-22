@@ -68,6 +68,30 @@ const roles = [
   { id: "admin" as const, label: "Admin", icon: Shield, desc: "System administrator" },
 ];
 
+const StableInputField = memo(({
+  label, type = "text", placeholder, icon: Icon, required = true, value, onChange,
+}: {
+  label: string; type?: string; placeholder: string;
+  icon?: React.ElementType; required?: boolean;
+  value: string; onChange: (v: string) => void;
+}) => (
+  <div className="space-y-1.5">
+    <Label className="text-xs text-muted-foreground">{label}</Label>
+    <div className="relative">
+      {Icon && <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />}
+      <Input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={`h-11 bg-secondary border-border focus:border-primary ${Icon ? "pl-10" : ""}`}
+        required={required}
+      />
+    </div>
+  </div>
+));
+StableInputField.displayName = "StableInputField";
+
 const Register = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState<Role>("doctor");
