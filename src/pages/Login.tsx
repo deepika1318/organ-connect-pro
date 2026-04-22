@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Heart, Shield, Activity, Eye, EyeOff } from "lucide-react";
+import { Heart, Shield, Activity, Eye, EyeOff, UserPlus } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -147,20 +147,29 @@ const Login = () => {
             </Button>
           </form>
 
-          <div className="text-center mt-6">
-            <p className="text-muted-foreground text-sm">
-              Don't have an account?{" "}
-              <button
-                onClick={() => navigate("/register")}
-                className="text-primary font-medium hover:underline"
-              >
-                Register here
-              </button>
-            </p>
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-background px-3 text-muted-foreground">New to Arogya AI?</span>
+            </div>
           </div>
 
-          <p className="text-center text-muted-foreground text-xs mt-4">
-            Access restricted to authorized hospital personnel only.
+          {/* Register CTA */}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => navigate("/register")}
+            className="w-full h-12 text-base border-primary/40 text-primary hover:bg-primary/10 hover:text-primary"
+          >
+            <UserPlus className="w-5 h-5 mr-2" />
+            Register as Doctor / Hospital Head / Admin
+          </Button>
+
+          <p className="text-center text-muted-foreground text-xs mt-4 leading-relaxed">
+            Professional registrations are reviewed and verified by an admin before access is granted.
           </p>
         </div>
       </motion.div>

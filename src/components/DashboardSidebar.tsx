@@ -1,10 +1,13 @@
+import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Heart, LayoutDashboard, Send, Bell, Truck, Droplets, LogOut, BarChart3, Users, Building2, Clock, HeartHandshake } from "lucide-react";
+import { Heart, LayoutDashboard, Send, Bell, Truck, Droplets, LogOut, BarChart3, Users, Building2, Clock, HeartHandshake, ShieldCheck } from "lucide-react";
+import { countPending, subscribe } from "@/lib/registrations";
 
-const navItems = [
+const baseNavItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/dashboard/request", icon: Send, label: "Request Organ" },
   { to: "/dashboard/donor", icon: HeartHandshake, label: "Donor Registration" },
+  { to: "/dashboard/approvals", icon: ShieldCheck, label: "Admin Approvals", dynamicBadge: "pending" as const },
   { to: "/dashboard/alerts", icon: Bell, label: "Alerts", badge: 3 },
   { to: "/dashboard/transport", icon: Truck, label: "Transport" },
   { to: "/dashboard/matches", icon: Users, label: "Match Log" },
@@ -17,6 +20,9 @@ const navItems = [
 
 const DashboardSidebar = () => {
   const location = useLocation();
+  const [pending, setPending] = useState(countPending());
+
+  useEffect(() => subscribe(() => setPending(countPending())), []);
 
   return (
     <aside className="w-64 h-screen bg-sidebar border-r border-sidebar-border flex flex-col fixed left-0 top-0 z-30">
@@ -31,10 +37,14 @@ const DashboardSidebar = () => {
       </div>
 
       <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
-        {navItems.map((item) => {
+        {baseNavItems.map((item) => {
           const isActive = item.to === "/dashboard"
             ? location.pathname === "/dashboard"
             : location.pathname.startsWith(item.to);
+          const badgeValue =
+            "dynamicBadge" in item && item.dynamicBadge === "pending"
+              ? pending > 0 ? pending : null
+              : "badge" in item ? item.badge : null;
           return (
             <NavLink
               key={item.to}
@@ -47,8 +57,10 @@ const DashboardSidebar = () => {
             >
               <item.icon className="w-4.5 h-4.5" />
               {item.label}
-              {item.badge && (
-                <span className="ml-auto w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center">{item.badge}</span>
+              {badgeValue && (
+                <span className="ml-auto min-w-5 h-5 px-1.5 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center font-semibold">
+                  {badgeValue}
+                </span>
               )}
             </NavLink>
           );
