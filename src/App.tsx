@@ -17,6 +17,7 @@ import Analytics from "./pages/Analytics";
 import MatchLog from "./pages/MatchLog";
 import HospitalNetwork from "./pages/HospitalNetwork";
 import ActivityTimeline from "./pages/ActivityTimeline";
+import AdminApprovals from "./pages/AdminApprovals";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="matches" element={<MatchLog />} />
             <Route path="hospitals" element={<HospitalNetwork />} />
             <Route path="timeline" element={<ActivityTimeline />} />
+            <Route path="approvals" element={<AdminApprovals />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

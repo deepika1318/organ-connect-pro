@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import { addRegistration } from "@/lib/registrations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -82,6 +84,11 @@ const Register = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Persist for admin review and notify
+    addRegistration(role, { ...formData });
+    toast.success("Registration sent to admin", {
+      description: "Your application is pending verification by the administrator.",
+    });
     setSubmitted(true);
     setTimeout(() => navigate("/"), 2500);
   };
