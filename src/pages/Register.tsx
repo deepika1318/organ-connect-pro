@@ -472,7 +472,7 @@ const Register = () => {
                 <button
                   key={r.id}
                   type="button"
-                  onClick={() => { setRole(r.id); setFormData(initialFormData); }}
+                  onClick={() => { setRole(r.id); setFormData(createInitialFormData()); }}
                   className={`flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-xs font-medium transition-all ${
                     role === r.id
                       ? "bg-primary/15 text-primary border border-primary/30"
@@ -487,19 +487,15 @@ const Register = () => {
           )}
 
           <form onSubmit={handleSubmit}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                {step === 1 && renderStep1()}
-                {step === 2 && renderStep2()}
-                {step === 3 && renderStep3()}
-              </motion.div>
-            </AnimatePresence>
+            <motion.div
+              initial={false}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {step === 1 && renderStep1()}
+              {step === 2 && renderStep2()}
+              {step === 3 && renderStep3()}
+            </motion.div>
 
             <div className="flex gap-3 mt-8">
               {step > 1 && (
