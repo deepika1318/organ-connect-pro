@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -101,20 +101,15 @@ const Register = () => {
     label: string; field: keyof FormData; type?: string; placeholder: string;
     icon?: React.ElementType; required?: boolean;
   }) => (
-    <div className="space-y-1.5">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
-      <div className="relative">
-        {Icon && <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />}
-        <Input
-          type={type}
-          placeholder={placeholder}
-          value={formData[field]}
-          onChange={(e) => update(field, e.target.value)}
-          className={`h-11 bg-secondary border-border focus:border-primary ${Icon ? "pl-10" : ""}`}
-          required={required}
-        />
-      </div>
-    </div>
+    <StableInputField
+      label={label}
+      type={type}
+      placeholder={placeholder}
+      icon={Icon}
+      required={required}
+      value={formData[field]}
+      onChange={(v) => update(field, v)}
+    />
   );
 
   // Step 1: Personal Information (common)
