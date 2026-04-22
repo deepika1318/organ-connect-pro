@@ -1,6 +1,6 @@
-import { useState, useCallback, memo } from "react";
+import { useState, useCallback, memo, type ChangeEvent, type ElementType, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { addRegistration } from "@/lib/registrations";
 import { Button } from "@/components/ui/button";
@@ -52,7 +52,7 @@ interface FormData {
   totalBeds: string;
 }
 
-const initialFormData: FormData = {
+const createInitialFormData = (): FormData => ({
   fullName: "", email: "", phone: "", password: "", confirmPassword: "",
   dateOfBirth: "", gender: "", address: "", city: "", state: "", pincode: "", profilePhoto: "",
   medicalLicenseNo: "", specialization: "", yearsOfExperience: "",
@@ -60,7 +60,7 @@ const initialFormData: FormData = {
   adminId: "", designation: "", authorityLevel: "", governmentId: "", organizationName: "",
   hospitalName: "", hospitalRegNo: "", hospitalType: "", headDesignation: "",
   nabhAccreditationNo: "", hospitalAddress: "", totalBeds: "",
-};
+});
 
 const roles = [
   { id: "doctor" as const, label: "Doctor", icon: Stethoscope, desc: "Medical professional" },
@@ -68,45 +68,66 @@ const roles = [
   { id: "admin" as const, label: "Admin", icon: Shield, desc: "System administrator" },
 ];
 
-const StableInputField = memo(({
-  label, type = "text", placeholder, icon: Icon, required = true, value, onChange,
-}: {
-  label: string; type?: string; placeholder: string;
-  icon?: React.ElementType; required?: boolean;
-  value: string; onChange: (v: string) => void;
-}) => (
-  <div className="space-y-1.5">
-    <Label className="text-xs text-muted-foreground">{label}</Label>
-    <div className="relative">
-      {Icon && <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />}
-      <Input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`h-11 bg-secondary border-border focus:border-primary ${Icon ? "pl-10" : ""}`}
-        required={required}
-      />
+interface RegisterInputFieldProps {
+  label: string;
+  field: keyof FormData;
+  value: string;
+  placeholder: string;
+  type?: string;
+  icon?: ElementType;
+  required?: boolean;
+  onValueChange: (field: keyof FormData, value: string) => void;
+}
+
+const RegisterInputField = memo(({
+  label,
+  field,
+  value,
+  placeholder,
+  type = "text",
+  icon: Icon,
+  required = true,
+  onValueChange,
+}: RegisterInputFieldProps) => {
+  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    onValueChange(field, event.target.value);
+  }, [field, onValueChange]);
+
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <div className="relative">
+        {Icon && <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />}
+        <Input
+          type={type}
+          placeholder={placeholder}
+          value={value}
+          onChange={handleChange}
+          className={`h-11 bg-secondary border-border focus:border-primary ${Icon ? "pl-10" : ""}`}
+          required={required}
+        />
+      </div>
     </div>
-  </div>
-));
-StableInputField.displayName = "StableInputField";
+  );
+});
+RegisterInputField.displayName = "RegisterInputField";
 
 const Register = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState<Role>("doctor");
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [formData, setFormData] = useState<FormData>(() => createInitialFormData());
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const update = useCallback((field: keyof FormData, value: string) =>
-    setFormData((prev) => ({ ...prev, [field]: value })), []);
+  const update = useCallback((field: keyof FormData, value: string) => {
+    setFormData((prev) => (prev[field] === value ? prev : { ...prev, [field]: value }));
+  }, []);
 
   const totalSteps = 3;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Persist for admin review and notify
     addRegistration(role, { ...formData });
@@ -119,23 +140,6 @@ const Register = () => {
 
   const genderOptions = ["Male", "Female", "Other"];
 
-  const InputField = ({
-    label, field, type = "text", placeholder, icon: Icon, required = true,
-  }: {
-    label: string; field: keyof FormData; type?: string; placeholder: string;
-    icon?: React.ElementType; required?: boolean;
-  }) => (
-    <StableInputField
-      label={label}
-      type={type}
-      placeholder={placeholder}
-      icon={Icon}
-      required={required}
-      value={formData[field]}
-      onChange={(v) => update(field, v)}
-    />
-  );
-
   // Step 1: Personal Information (common)
   const renderStep1 = () => (
     <div className="space-y-4">
@@ -143,10 +147,10 @@ const Register = () => {
         <User className="w-5 h-5 text-primary" /> Personal Information
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <InputField label="Full Name *" field="fullName" placeholder="Dr. Rajesh Kumar" icon={User} />
-        <InputField label="Email Address *" field="email" type="email" placeholder="doctor@hospital.com" icon={Mail} />
-        <InputField label="Phone Number *" field="phone" type="tel" placeholder="+91 98765 43210" icon={Phone} />
-        <InputField label="Date of Birth *" field="dateOfBirth" type="date" placeholder="" icon={Calendar} />
+        <RegisterInputField label="Full Name *" field="fullName" value={formData.fullName} placeholder="Dr. Rajesh Kumar" icon={User} onValueChange={update} />
+        <RegisterInputField label="Email Address *" field="email" value={formData.email} type="email" placeholder="doctor@hospital.com" icon={Mail} onValueChange={update} />
+        <RegisterInputField label="Phone Number *" field="phone" value={formData.phone} type="tel" placeholder="+91 98765 43210" icon={Phone} onValueChange={update} />
+        <RegisterInputField label="Date of Birth *" field="dateOfBirth" value={formData.dateOfBirth} type="date" placeholder="" icon={Calendar} onValueChange={update} />
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Gender *</Label>
           <div className="flex gap-2">
@@ -166,11 +170,11 @@ const Register = () => {
             ))}
           </div>
         </div>
-        <InputField label="City *" field="city" placeholder="Mumbai" icon={Building2} />
+        <RegisterInputField label="City *" field="city" value={formData.city} placeholder="Mumbai" icon={Building2} onValueChange={update} />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <InputField label="State *" field="state" placeholder="Maharashtra" />
-        <InputField label="Pincode *" field="pincode" placeholder="400001" />
+        <RegisterInputField label="State *" field="state" value={formData.state} placeholder="Maharashtra" onValueChange={update} />
+        <RegisterInputField label="Pincode *" field="pincode" value={formData.pincode} placeholder="400001" onValueChange={update} />
       </div>
       <div className="space-y-1.5">
         <Label className="text-xs text-muted-foreground">Full Address *</Label>
@@ -194,36 +198,36 @@ const Register = () => {
 
       {role === "doctor" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <InputField label="Medical License No. *" field="medicalLicenseNo" placeholder="MCI-123456" icon={FileText} />
-          <InputField label="NMC Registration No. *" field="nmcRegistrationNo" placeholder="NMC-2024-78901" icon={BadgeCheck} />
-          <InputField label="Specialization *" field="specialization" placeholder="Cardiology, Nephrology…" icon={Stethoscope} />
-          <InputField label="Years of Experience *" field="yearsOfExperience" type="number" placeholder="12" icon={Calendar} />
-          <InputField label="Hospital Affiliation *" field="hospitalAffiliation" placeholder="AIIMS Delhi" icon={Building2} />
-          <InputField label="Department *" field="department" placeholder="Cardiac Surgery" />
+          <RegisterInputField label="Medical License No. *" field="medicalLicenseNo" value={formData.medicalLicenseNo} placeholder="MCI-123456" icon={FileText} onValueChange={update} />
+          <RegisterInputField label="NMC Registration No. *" field="nmcRegistrationNo" value={formData.nmcRegistrationNo} placeholder="NMC-2024-78901" icon={BadgeCheck} onValueChange={update} />
+          <RegisterInputField label="Specialization *" field="specialization" value={formData.specialization} placeholder="Cardiology, Nephrology…" icon={Stethoscope} onValueChange={update} />
+          <RegisterInputField label="Years of Experience *" field="yearsOfExperience" value={formData.yearsOfExperience} type="number" placeholder="12" icon={Calendar} onValueChange={update} />
+          <RegisterInputField label="Hospital Affiliation *" field="hospitalAffiliation" value={formData.hospitalAffiliation} placeholder="AIIMS Delhi" icon={Building2} onValueChange={update} />
+          <RegisterInputField label="Department *" field="department" value={formData.department} placeholder="Cardiac Surgery" onValueChange={update} />
           <div className="sm:col-span-2">
-            <InputField label="Qualifications *" field="qualifications" placeholder="MBBS, MD, DM (Cardiology)" icon={FileText} />
+            <RegisterInputField label="Qualifications *" field="qualifications" value={formData.qualifications} placeholder="MBBS, MD, DM (Cardiology)" icon={FileText} onValueChange={update} />
           </div>
         </div>
       )}
 
       {role === "admin" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <InputField label="Admin ID *" field="adminId" placeholder="ADM-2024-001" icon={Shield} />
-          <InputField label="Government ID *" field="governmentId" placeholder="Aadhaar / PAN / Service ID" icon={FileText} />
-          <InputField label="Designation *" field="designation" placeholder="Regional Transplant Coordinator" icon={BadgeCheck} />
-          <InputField label="Authority Level *" field="authorityLevel" placeholder="State / National" />
+          <RegisterInputField label="Admin ID *" field="adminId" value={formData.adminId} placeholder="ADM-2024-001" icon={Shield} onValueChange={update} />
+          <RegisterInputField label="Government ID *" field="governmentId" value={formData.governmentId} placeholder="Aadhaar / PAN / Service ID" icon={FileText} onValueChange={update} />
+          <RegisterInputField label="Designation *" field="designation" value={formData.designation} placeholder="Regional Transplant Coordinator" icon={BadgeCheck} onValueChange={update} />
+          <RegisterInputField label="Authority Level *" field="authorityLevel" value={formData.authorityLevel} placeholder="State / National" onValueChange={update} />
           <div className="sm:col-span-2">
-            <InputField label="Organization Name *" field="organizationName" placeholder="NOTTO / ROTTO / SOTTO" icon={Building2} />
+            <RegisterInputField label="Organization Name *" field="organizationName" value={formData.organizationName} placeholder="NOTTO / ROTTO / SOTTO" icon={Building2} onValueChange={update} />
           </div>
         </div>
       )}
 
       {role === "hospital_head" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <InputField label="Hospital Name *" field="hospitalName" placeholder="Fortis Hospital Mumbai" icon={Building2} />
-          <InputField label="Hospital Registration No. *" field="hospitalRegNo" placeholder="HRN-MH-2024-789" icon={FileText} />
-          <InputField label="NABH Accreditation No. *" field="nabhAccreditationNo" placeholder="NABH-H-2024-1234" icon={BadgeCheck} />
-          <InputField label="Designation *" field="headDesignation" placeholder="Chief Medical Officer" icon={Crown} />
+          <RegisterInputField label="Hospital Name *" field="hospitalName" value={formData.hospitalName} placeholder="Fortis Hospital Mumbai" icon={Building2} onValueChange={update} />
+          <RegisterInputField label="Hospital Registration No. *" field="hospitalRegNo" value={formData.hospitalRegNo} placeholder="HRN-MH-2024-789" icon={FileText} onValueChange={update} />
+          <RegisterInputField label="NABH Accreditation No. *" field="nabhAccreditationNo" value={formData.nabhAccreditationNo} placeholder="NABH-H-2024-1234" icon={BadgeCheck} onValueChange={update} />
+          <RegisterInputField label="Designation *" field="headDesignation" value={formData.headDesignation} placeholder="Chief Medical Officer" icon={Crown} onValueChange={update} />
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">Hospital Type *</Label>
             <select
@@ -239,7 +243,7 @@ const Register = () => {
               <option value="military">Military / Defence</option>
             </select>
           </div>
-          <InputField label="Total Beds *" field="totalBeds" type="number" placeholder="500" />
+          <RegisterInputField label="Total Beds *" field="totalBeds" value={formData.totalBeds} type="number" placeholder="500" onValueChange={update} />
           <div className="sm:col-span-2">
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Hospital Address *</Label>
@@ -468,7 +472,7 @@ const Register = () => {
                 <button
                   key={r.id}
                   type="button"
-                  onClick={() => { setRole(r.id); setFormData(initialFormData); }}
+                  onClick={() => { setRole(r.id); setFormData(createInitialFormData()); }}
                   className={`flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-xs font-medium transition-all ${
                     role === r.id
                       ? "bg-primary/15 text-primary border border-primary/30"
@@ -483,19 +487,15 @@ const Register = () => {
           )}
 
           <form onSubmit={handleSubmit}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                {step === 1 && renderStep1()}
-                {step === 2 && renderStep2()}
-                {step === 3 && renderStep3()}
-              </motion.div>
-            </AnimatePresence>
+            <motion.div
+              initial={false}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {step === 1 && renderStep1()}
+              {step === 2 && renderStep2()}
+              {step === 3 && renderStep3()}
+            </motion.div>
 
             <div className="flex gap-3 mt-8">
               {step > 1 && (
